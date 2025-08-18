@@ -80,6 +80,47 @@
             font-size: 0.9em;
         }
 
+        /* API section */
+        .api-section {
+            margin-top: 100px;
+            text-align: center;
+        }
+
+        .api-section h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+        }
+
+        /* API card button */
+        .api-card {
+            display: inline-block;
+            background: #fff;
+            padding: 20px 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: transform 0.3s, background 0.3s;
+            text-align: center;
+        }
+
+        .api-card i {
+            font-size: 30px;
+            color: #27ae60;
+            margin-bottom: 10px;
+        }
+
+        .api-card p {
+            margin: 0;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .api-card:hover {
+            background: #e8f9f2;
+            transform: translateY(-5px);
+        }
+
         @media (max-width: 600px) {
             .cards {
                 flex-direction: column;
@@ -111,7 +152,17 @@
                 <p>View, Add, Edit or Delete Appointments</p>
                 <span class="badge" id="appointmentsCount">0</span>
             </div>
+
+
         </div>
+        <div class="api-section">
+            <h3>Check all APIs Endpoints</h3>
+            <div class="api-card" onclick="location.href='../backend/index.php'">
+                <i class="fas fa-link"></i>
+                <p>Explore API Endpoints</p>
+            </div>
+        </div>
+
     </div>
 
     <script>
