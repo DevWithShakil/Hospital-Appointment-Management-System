@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Registration</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body style="display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+    <h2>Register Patient</h2>
+    <form id="patientForm">
+        <input type="text" id="name" placeholder="Name" required> <br>
+        <input type="number" id="age" placeholder="Age" required> <br>
+        <input type="email" id="email" placeholder="Email" required> <br>
+        <input type="text" id="phone" placeholder="Phone" required> <br>
+        <button type="submit">Submit</button>
+    </form>
+
+    <script>
+        document.getElementById("patientForm").addEventListener("submit", async function (e) {
+            e.preventDefault();
+
+            let data = {
+                name: document.getElementById("name").value,
+                age: document.getElementById("age").value,
+                email: document.getElementById("email").value,
+                phone: document.getElementById("phone").value
+            };
+
+            let res = await fetch("http://localhost:3000/backend/patients/create.php", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data)
+            });
+
+            let result = await res.json();
+            alert(result.message || result.error);
+        })
+    </script>
+</body>
+
+</html>
