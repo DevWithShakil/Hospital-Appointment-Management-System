@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Hospital Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f4f7f8;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 50px auto;
+            padding: 0 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 40px;
+        }
+
+        /* Dashboard cards */
+        .cards {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 40px 30px;
+            width: 250px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: transform 0.3s, background 0.3s;
+            position: relative;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            background: #d1e7fd;
+        }
+
+        .card h2 {
+            color: #3498db;
+            margin-bottom: 15px;
+        }
+
+        .card p {
+            color: #555;
+            font-size: 0.95em;
+        }
+
+        /* Icon on top */
+        .card i {
+            font-size: 40px;
+            margin-bottom: 15px;
+            color: #3498db;
+        }
+
+        /* Badge count (optional) */
+        .badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #e74c3c;
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 50%;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 600px) {
+            .cards {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .card {
+                width: 80%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Hospital Management Dashboard</h1>
+
+        <div class="cards">
+            <div class="card" onclick="location.href='patients.html'">
+                <i class="fas fa-user-injured"></i>
+                <h2>Patients</h2>
+                <p>View, Add, Edit or Delete Patients</p>
+                <span class="badge" id="patientsCount">0</span>
+            </div>
+
+            <div class="card" onclick="location.href='appointments.html'">
+                <i class="fas fa-calendar-check"></i>
+                <h2>Appointments</h2>
+                <p>View, Add, Edit or Delete Appointments</p>
+                <span class="badge" id="appointmentsCount">0</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Fetch counts from backend (optional)
+        async function loadCounts() {
+            try {
+                let patientsRes = await fetch("../backend/patients/read.php");
+                let patients = await patientsRes.json();
+                document.getElementById("patientsCount").textContent = patients.length;
+
+                let appointmentsRes = await fetch("../backend/appointments/read.php");
+                let appointments = await appointmentsRes.json();
+                document.getElementById("appointmentsCount").textContent = appointments.length;
+            } catch (err) {
+                console.error("Error loading counts:", err);
+            }
+        }
+
+        loadCounts();
+    </script>
+</body>
+
+</html>
