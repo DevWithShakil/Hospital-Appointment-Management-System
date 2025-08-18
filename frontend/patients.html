@@ -3,25 +3,185 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Patient Registration</title>
-    <link rel="stylesheet" href="css/style.css">
+    <title>Patients Management</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f4f7f8;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            background: #fff;
+            padding: 30px 40px;
+            border-radius: 10px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        input,
+        button {
+            padding: 10px;
+            font-size: 1em;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+
+        input {
+            flex: 1 1 200px;
+        }
+
+        button {
+            background: #3498db;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            flex: 1 1 150px;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #2980b9;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        th {
+            background: #3498db;
+            color: #fff;
+        }
+
+        tr:nth-child(even) {
+            background: #f2f2f2;
+        }
+
+        tr:hover {
+            background: #d1e7fd;
+        }
+
+        .action-btn {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 2px;
+            transition: 0.3s;
+        }
+
+        .edit-btn {
+            background: #f39c12;
+            color: #fff;
+        }
+
+        .edit-btn:hover {
+            background: #e67e22;
+        }
+
+        .delete-btn {
+            background: #e74c3c;
+            color: #fff;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        @media (max-width: 700px) {
+            form {
+                flex-direction: column;
+            }
+
+            input,
+            button {
+                flex: 1 1 100%;
+            }
+        }
+    </style>
 </head>
 
-<body style="display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
-    <h2>Register Patient</h2>
-    <form id="patientForm">
-        <input type="text" id="name" placeholder="Name" required> <br>
-        <input type="number" id="age" placeholder="Age" required> <br>
-        <input type="email" id="email" placeholder="Email" required> <br>
-        <input type="text" id="phone" placeholder="Phone" required> <br>
-        <button type="submit">Submit</button>
-    </form>
+<body>
+    <div class="container">
+        <h1>Patients Management</h1>
+
+        <!-- Patient Form -->
+        <form id="patientForm">
+            <input type="hidden" id="patientId">
+            <input type="text" id="name" placeholder="Name" required>
+            <input type="number" id="age" placeholder="Age" required>
+            <input type="email" id="email" placeholder="Email" required>
+            <input type="text" id="phone" placeholder="Phone" required>
+            <button type="submit">Save</button>
+        </form>
+
+        <!-- Patients Table -->
+        <table id="patientsTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Age</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
 
     <script>
+        // Load patients
+        async function loadPatients() {
+            let res = await fetch("../backend/patients/read.php");
+            let patients = await res.json();
+            let tbody = document.querySelector("#patientsTable tbody");
+            tbody.innerHTML = "";
+            patients.forEach(p => {
+                tbody.innerHTML += `
+        <tr>
+            <td>${p.id}</td>
+            <td>${p.name}</td>
+            <td>${p.age}</td>
+            <td>${p.email}</td>
+            <td>${p.phone}</td>
+            <td>
+                <button class="action-btn edit-btn" onclick="editPatient(${p.id}, '${p.name}', ${p.age}, '${p.email}', '${p.phone}')">Edit</button>
+                <button class="action-btn delete-btn" onclick="deletePatient(${p.id})">Delete</button>
+            </td>
+        </tr>`;
+            });
+        }
+
+        // Add / Update Patient
         document.getElementById("patientForm").addEventListener("submit", async function (e) {
             e.preventDefault();
-
+            let id = document.getElementById("patientId").value;
             let data = {
                 name: document.getElementById("name").value,
                 age: document.getElementById("age").value,
@@ -29,7 +189,13 @@
                 phone: document.getElementById("phone").value
             };
 
-            let res = await fetch("http://localhost:3000/backend/patients/create.php", {
+            let url = "../backend/patients/create.php";
+            if (id) { // update
+                url = "../backend/patients/update.php";
+                data.id = id;
+            }
+
+            let res = await fetch(url, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data)
@@ -37,7 +203,36 @@
 
             let result = await res.json();
             alert(result.message || result.error);
-        })
+            document.getElementById("patientForm").reset();
+            document.getElementById("patientId").value = "";
+            loadPatients();
+        });
+
+        // Edit patient
+        function editPatient(id, name, age, email, phone) {
+            document.getElementById("patientId").value = id;
+            document.getElementById("name").value = name;
+            document.getElementById("age").value = age;
+            document.getElementById("email").value = email;
+            document.getElementById("phone").value = phone;
+        }
+
+        // Delete patient
+        async function deletePatient(id) {
+            if (confirm("Are you sure to delete this patient?")) {
+                let res = await fetch("../backend/patients/delete.php", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ id })
+                });
+                let result = await res.json();
+                alert(result.message || result.error);
+                loadPatients();
+            }
+        }
+
+        // Initial load
+        loadPatients();
     </script>
 </body>
 
