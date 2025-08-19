@@ -1,0 +1,9 @@
+{
+  "name": "hospital/appointment-management-system",
+  "description": "Hospital Appointment Management System",
+  "require": {
+    "php": ">=7.4",
+    "ext-pdo": "*",
+    "ext-pgsql": "*"
+  }
+}
