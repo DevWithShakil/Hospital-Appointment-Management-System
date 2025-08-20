@@ -5,6 +5,7 @@ RUN apt-get update && apt-get install -y \
     libpq-dev \
     unzip \
     git \
+    zip \
     && docker-php-ext-install pdo pdo_pgsql \
     && a2enmod rewrite
 
@@ -22,7 +23,7 @@ WORKDIR /var/www/html # ওয়ার্কিং ডিরেক্টরি 
 # শুধুমাত্র composer ফাইলগুলি কপি করুন এবং নির্ভরতা ইনস্টল করুন
 # এটি ক্যাশিং এর জন্য ভালো এবং নিশ্চিত করে যে ফাইলগুলি উপস্থিত আছে
 COPY composer.json composer.lock ./
-RUN composer install --no-dev --optimize-autoloader --no-interaction
+RUN composer install --no-dev --optimize-autoloader --no-interaction --verbose
 
 # বাকি প্রজেক্ট ফাইলগুলি কপি করুন
 COPY . /var/www/html
