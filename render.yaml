@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: hospital-appointment-system
+    env: php
+    buildCommand: "composer install --no-dev --optimize-autoloader"
+    startCommand: "php -S 0.0.0.0:10000 -t public"
+    envVars:
+      - key: DB_HOST
+      - key: DB_PORT
+      - key: DB_NAME
+      - key: DB_USER
+      - key: DB_PASS
